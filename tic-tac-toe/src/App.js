@@ -1,13 +1,25 @@
-
-import * as React from 'react';
+import React, { useState } from 'react';
+import './App.css';
 
 function Board() {
-  const squares = Array(9).fill(null);
+  const [squares, setSquares] = useState(Array(9).fill(null));
+  const [nextValue, setNextValue] = useState('X');
+  const winner = calculateWinner(squares);
+  const status = calculateStatus(winner, squares, nextValue);
+  
   function selectSquare(square) {
-
+    if (winner || squares[square]) {
+      return;
+    }
+    const updatedSquares = [...squares];
+    updatedSquares[square] = nextValue;
+    setSquares(updatedSquares);
+    setNextValue(calculateNextValue(updatedSquares));
   }
 
   function restart() {
+    setSquares(Array(9).fill(null));
+    setNextValue('X');
   }
 
   function renderSquare(i) {
@@ -19,55 +31,54 @@ function Board() {
   }
 
   return (
-    <div>
-      <div >STATUS</div>
-      <div >
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
+    <div className='game'>
+      <div className="board">
+        <div className="board-row">
+          {renderSquare(0)}
+          {renderSquare(1)}
+          {renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {renderSquare(3)}
+          {renderSquare(4)}
+          {renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {renderSquare(6)}
+          {renderSquare(7)}
+          {renderSquare(8)}
+        </div>
+        <div className="status">{status}</div>
+        <button className='restart-button' onClick={restart}>
+          Restart
+        </button>
       </div>
-      <div >
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
-      </div>
-      <div >
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-      </div>
-      <button onClick={restart}>
-        restart
-      </button>
     </div>
   );
 }
 
 function Game() {
   return (
-    <div >
-      <div >
+    <div>
+      <div>
         <Board />
       </div>
     </div>
   );
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateStatus(winner, squares, nextValue) {
   return winner
     ? `Winner: ${winner}`
     : squares.every(Boolean)
-      ? `Scratch: Cat's game`
-      : `Next player: ${nextValue}`;
+    ? `Draw: Cat's game`
+    : `Next player: ${nextValue}`;
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateNextValue(squares) {
   return squares.filter(Boolean).length % 2 === 0 ? 'X' : 'O';
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
